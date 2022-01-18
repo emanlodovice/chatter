@@ -25,4 +25,9 @@ class ChatRoomViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.request.user.chat_rooms.order_by('-last_message_date')
-    
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
+
