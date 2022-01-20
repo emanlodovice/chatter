@@ -4,7 +4,7 @@ from .models import ChatRoom, Message
 
 
 class ChatRoomAdmin(admin.ModelAdmin):
-    list_display = ('name', 'creation_date', 'last_message_date', 'is_group')
+    list_display = ('uuid', 'name', 'creation_date', 'last_message_date', 'is_group')
 
 
 class MessageAdmin(admin.ModelAdmin):

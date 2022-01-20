@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +14,7 @@ def blank_json():
 
 
 class ChatRoom(models.Model):
+    uuid = models.UUIDField(editable=False, default=uuid.uuid4, db_index=True)
     is_group = models.BooleanField(default=False)
     name = models.CharField(blank=True, max_length=100, verbose_name=_('Room name'))
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
@@ -33,6 +35,7 @@ class ChatRoom(models.Model):
 
 
 class Message(models.Model):
+    uuid = models.UUIDField(editable=False, default=uuid.uuid4, db_index=True)
     room = models.ForeignKey(ChatRoom, related_name='messages', on_delete=models.CASCADE, verbose_name=_('Chat room'))
     sender = models.ForeignKey(User, related_name='chat_messages', on_delete=models.CASCADE, verbose_name=_('Sender'))
     content = models.TextField(verbose_name=_('Content'))

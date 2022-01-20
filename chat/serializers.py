@@ -23,7 +23,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatRoom
-        fields = ('name', 'last_message_date', 'is_group', 'members', 'member_usernames', 'id')
+        fields = ('name', 'last_message_date', 'is_group', 'members', 'member_usernames', 'uuid')
         read_only_fields = ('last_message_date', 'members')
 
     def validate_member_usernames(self, attrs):
@@ -54,8 +54,13 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    user = MessageUserSerializer(required=True)
+    sender = MessageUserSerializer(read_only=True)
 
     class Meta:
         model = Message
-        fields = ('content', 'creation_date', 'user')
+        fields = ('sender', 'content', 'creation_date', 'uuid')
+
+    def create(self, validated_data):
+        validated_data['sender'] = self.context['user']
+        validated_data['room'] = self.context['room']
+        return super().create(validated_data)
