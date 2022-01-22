@@ -6,12 +6,13 @@ from rest_framework import (
     viewsets,
     permissions,
     mixins,
+    pagination,
 )
 
 from typing import Any, Dict
 
 from . import config
-from .models import ChatRoom, Message
+from .models import ChatRoom
 from .serializers import ChatRoomSerializer, MessageSerializer
 
 class Home(TemplateView):
@@ -23,13 +24,25 @@ class Home(TemplateView):
         return context
 
 
-class ChatRoomViewset(viewsets.ModelViewSet):
+class LimitOffsetPagination(pagination.LimitOffsetPagination):
+    max_limit = 30
+    default_limit = 20
+
+
+class ChatRoomViewset(
+    mixins.CreateModelMixin,
+    # mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
     serializer_class = ChatRoomSerializer
     permission_classes = (permissions.IsAuthenticated,)
     lookup_field = 'uuid'
+    pagination_class = LimitOffsetPagination
+
 
     def get_queryset(self):
-        return self.request.user.chat_rooms.order_by('-last_message_date')
+        return self.request.user.chat_rooms.prefetch_related('members').order_by('-last_message_date')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -39,13 +52,14 @@ class ChatRoomViewset(viewsets.ModelViewSet):
 
 class MessageViewset(
     mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    # mixins.DestroyModelMixin,
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = MessageSerializer
     permission_classes = (permissions.IsAuthenticated,)
     lookup_field = 'uuid'
+    pagination_class = LimitOffsetPagination
 
     @cached_property
     def room(self) -> ChatRoom:
@@ -54,7 +68,7 @@ class MessageViewset(
         return get_object_or_404(self.request.user.chat_rooms.all(), uuid=self.kwargs['room_uuid'])
 
     def get_queryset(self):
-        return self.room.messages.order_by('-creation_date')
+        return self.room.messages.order_by('-creation_date').select_related('sender')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
