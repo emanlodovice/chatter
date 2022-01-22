@@ -5,9 +5,17 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 from .models import ChatRoom, Message
+from .config import get_recipients
 
 
 User = get_user_model()
+
+
+def get_users(user):
+    """ Default method for getting users that the current user can message. By default it will return
+    all active users
+    """
+    return User.objects.filter(is_active=True)
 
 
 class MessageUserSerializer(serializers.ModelSerializer):
@@ -28,7 +36,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     def validate_member_usernames(self, attrs):
         # todo: validate that the list of members are users that the current user can message
-        members = list(User.objects.filter(username__in=attrs).exclude(id=self.context['user'].id))
+        members = list(get_recipients(self.context['user']).filter(username__in=attrs).exclude(id=self.context['user'].id))
         if len(members) == 0:
             raise serializers.ValidationError(_('Members are required.'))
         members.append(self.context['user'])

@@ -7,13 +7,19 @@ from rest_framework import (
     permissions,
     mixins,
     pagination,
+    filters
 )
 
 from typing import Any, Dict
 
 from . import config
 from .models import ChatRoom
-from .serializers import ChatRoomSerializer, MessageSerializer
+from .serializers import (
+    ChatRoomSerializer,
+    MessageSerializer,
+    MessageUserSerializer,
+)
+
 
 class Home(TemplateView):
     template_name = 'chat/index.html'
@@ -75,3 +81,17 @@ class MessageViewset(
         context['room'] = self.room
         context['user'] = self.request.user
         return context
+
+
+class RecipientsViewset(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = MessageUserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = LimitOffsetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ('username', 'first_name', 'last_name')
+
+    def get_queryset(self):
+        return config.get_recipients(self.request.user).exclude(id=self.request.user.id)
