@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 from django.utils.functional import cached_property
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework import (
     viewsets,
@@ -22,11 +23,21 @@ from .serializers import (
 
 
 class Home(TemplateView):
-    template_name = 'chat/index.html'
+    template_name = 'chat/dummy.html'
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['config'] = config
+        return context
+
+
+class ClientView(LoginRequiredMixin, TemplateView):
+    template_name = 'chat/index.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['token'] = '123'
+        context['client_url'] = config.CLIENT_URL
         return context
 
 

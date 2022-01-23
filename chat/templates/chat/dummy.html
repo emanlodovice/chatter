@@ -1,0 +1,61 @@
+{% extends 'chat/base.html' %}
+{% load i18n %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+    <form id="room-form">
+        <label for="room">Room Name: </label>
+        <input type="text" id="room" autofocus>
+        <input type="submit" value="join">
+    </form>
+    <div class="thread">
+        <h1 id="room-name"></h1>
+        <form class="message-form" id="message-form">
+            <textarea name="" id="message-content" cols="30" rows="10"></textarea>
+            <input type="submit" value="Send">
+        </form>
+    </div>
+
+    <script>
+        let form = document.querySelector('#room-form');
+        let room = '';
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            room = document.querySelector('#room').value.trim();
+            if (room) {
+                document.querySelector('#room-name').textContent = room;
+            }
+        });
+
+        let messageForm = document.querySelector('#message-form');
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageField = document.querySelector('#message-content');
+            const message = messageField.value;
+            if (message) {
+                messageField.value = '';
+                sendMessage(message);
+            }
+        });
+
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat-room/what/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            console.log(e);
+        }
+
+        chatSocket.onclose = function(e) {
+            console.log('Disconnect');
+        }
+
+        function sendMessage(message) {
+            chatSocket.send(JSON.stringify({
+                'room': room,
+                'message': message
+            }));
+        }
+    </script>
+{% endblock %}

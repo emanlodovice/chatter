@@ -1,0 +1,7 @@
+.thread-list {
+    padding: 25px 30px 25px 30px;
+}
+
+.thread-list .text-content {
+    width: calc(100% - 50px);
+}
