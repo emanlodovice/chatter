@@ -2,13 +2,15 @@ from django.views.generic import TemplateView
 from django.utils.functional import cached_property
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from rest_framework import (
     viewsets,
     permissions,
     mixins,
     pagination,
-    filters
+    filters,
+    authentication
 )
 
 from typing import Any, Dict
@@ -46,7 +48,13 @@ class LimitOffsetPagination(pagination.LimitOffsetPagination):
     default_limit = 20
 
 
+class ChatMixin:
+    pagination_class = LimitOffsetPagination
+    authentication_classes = [authentication.SessionAuthentication, JWTAuthentication]
+
+
 class ChatRoomViewset(
+    ChatMixin,
     mixins.CreateModelMixin,
     # mixins.DestroyModelMixin,
     mixins.ListModelMixin,
@@ -55,7 +63,6 @@ class ChatRoomViewset(
     serializer_class = ChatRoomSerializer
     permission_classes = (permissions.IsAuthenticated,)
     lookup_field = 'uuid'
-    pagination_class = LimitOffsetPagination
 
 
     def get_queryset(self):
@@ -68,6 +75,7 @@ class ChatRoomViewset(
 
 
 class MessageViewset(
+    ChatMixin,
     mixins.CreateModelMixin,
     # mixins.DestroyModelMixin,
     mixins.ListModelMixin,
@@ -76,7 +84,6 @@ class MessageViewset(
     serializer_class = MessageSerializer
     permission_classes = (permissions.IsAuthenticated,)
     lookup_field = 'uuid'
-    pagination_class = LimitOffsetPagination
 
     @cached_property
     def room(self) -> ChatRoom:
@@ -95,12 +102,12 @@ class MessageViewset(
 
 
 class RecipientsViewset(
+    ChatMixin,
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = MessageUserSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ('username', 'first_name', 'last_name')
 
