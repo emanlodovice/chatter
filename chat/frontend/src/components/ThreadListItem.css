@@ -1,0 +1,5 @@
+.thread-list-item:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    border-radius: 10px;
+}

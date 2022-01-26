@@ -1,6 +1,9 @@
 <html>
     <head>
         <title>{% block title %}Chat{% endblock %}</title>
+        <style>
+            {% block extra_styles %} {% endblock %}
+        </style>
     </head>
     <body>
         <h1>{{ config.PAGE_HEADING }}</h1>

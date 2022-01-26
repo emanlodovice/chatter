@@ -142,3 +142,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ]
 }
+
+CHAT_CLIENT_URL = 'http://localhost:3000'

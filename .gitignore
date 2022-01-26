@@ -2,3 +2,5 @@
 *.pyc
 .vscode
 .venv
+node_modules
+frontend/build
