@@ -1,11 +1,10 @@
 from typing import List
-from django.db.models import fields
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 from .models import ChatRoom, Message
-from .config import get_recipients
+from .config import get_recipients, UserDetail
 
 
 User = get_user_model()
@@ -18,11 +17,19 @@ def get_users(user):
     return User.objects.filter(is_active=True)
 
 
+
 class MessageUserSerializer(serializers.ModelSerializer):
+    avatar = serializers.ReadOnlyField()
+    name = serializers.ReadOnlyField()
+
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'id')
+        fields = ('username', 'name', 'id', 'avatar')
         read_only_fields = ('last_name', 'first_name')
+
+    def to_representation(self, instance):
+        instance = UserDetail(instance)
+        return super().to_representation(instance)
 
 
 class ChatRoomSerializer(serializers.ModelSerializer):

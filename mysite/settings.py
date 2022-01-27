@@ -144,3 +144,4 @@ REST_FRAMEWORK = {
 }
 
 CHAT_CLIENT_URL = 'http://localhost:3000'
+CHAT_USER_CLASS = 'mysite.user.SiteUserDetail'
