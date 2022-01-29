@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'chat',
     'channels',
     'drf_yasg',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -145,3 +147,11 @@ REST_FRAMEWORK = {
 
 CHAT_CLIENT_URL = 'http://localhost:3000'
 CHAT_USER_CLASS = 'mysite.user.SiteUserDetail'
+
+CORS_ALLOWED_ORIGINS = [
+    CHAT_CLIENT_URL,
+]
+
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS': True,
+}

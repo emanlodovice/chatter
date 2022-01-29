@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block title %}Messages{% endblock %}
+{% block extra_head %}<meta name="viewport" content="width=device-width, initial-scale=1">{% endblock %}
 
 {% block content %}
     <iframe src="{{ client_url }}?token={{ token }}" frameborder="0" width="100%" height="100%"></iframe>
