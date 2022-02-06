@@ -24,7 +24,7 @@ class ChatRoom(models.Model):
     key_identifier = models.TextField(db_index=True)
 
     def __str__(self) -> str:
-        return self.name
+        return f'Room #{self.id}'
 
     @staticmethod
     def generate_key_identifier(members: List[User], name: str):

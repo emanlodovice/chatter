@@ -35,10 +35,11 @@ class MessageUserSerializer(serializers.ModelSerializer):
 class ChatRoomSerializer(serializers.ModelSerializer):
     members = MessageUserSerializer(many=True, read_only=True)
     member_usernames = serializers.ListField(child=serializers.CharField(), write_only=True)
+    last_message = serializers.SerializerMethodField()
 
     class Meta:
         model = ChatRoom
-        fields = ('name', 'last_message_date', 'is_group', 'members', 'member_usernames', 'uuid')
+        fields = ('name', 'last_message_date', 'is_group', 'members', 'member_usernames', 'uuid', 'last_message')
         read_only_fields = ('last_message_date', 'members')
 
     def validate_member_usernames(self, attrs):
@@ -66,6 +67,13 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         chat_room = ChatRoom.objects.create(**validated_data)
         chat_room.members.add(*members)
         return chat_room
+
+    def get_last_message(self, obj):
+        message = obj.messages.order_by('-creation_date').values('content').first()
+        if message:
+            return message['content']
+        return ''
+
 
 
 class MessageSerializer(serializers.ModelSerializer):

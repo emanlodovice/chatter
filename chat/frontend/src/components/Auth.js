@@ -1,10 +1,11 @@
 import React, {useEffect, useContext} from 'react';
 import axios from 'axios';
 import { GlobalContext } from './../store';
+import { baseURL } from './../constants';
 
 
 function updateJWT(store, refreshToken) {
-  axios.post('http://localhost:8000/refresh-token', { refresh: refreshToken })
+  axios.post(`${baseURL}/refresh-token`, { refresh: refreshToken })
     .then(response => {
       const accessToken = response.data.access;
       let refresh = refreshToken;

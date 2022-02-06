@@ -1,16 +1,13 @@
+import { useContext } from 'react';
 import Avatar from './Avatar.js';
 import './ThreadListItem.css';
+import { GlobalContext } from './../store';
 
-function ThreadListItem() {
-  // w-full
-  const thread = {
-    user: {
-      avatar: 'https://avatars.githubusercontent.com/u/3273867?v=4',
-      username: 'Emmanuel Lodovice',
-    },
-    message: 'This is a test message This is a test This is a test message This is a test ',
-    timestamp: new Date()
-  }
+function ThreadListItem(props) {
+  const store = useContext(GlobalContext);
+  const thread = props.thread;
+  thread.user = thread.members.filter((member) => member.id !== store.state.userId)[0];
+  thread.timestamp = new Date(thread.last_message_date);
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   return (
     <div className="thread-list-item pr-3 py-2 hover:pl-3">
@@ -21,7 +18,7 @@ function ThreadListItem() {
             <h4 className="text-lg">{thread.user.username}</h4>
             <span className="text-sm">{thread.timestamp.toLocaleDateString(options)}</span>
           </div>
-          <p className="text-base text-slate-300 text-ellipsis overflow-hidden whitespace-nowrap">{thread.message}</p>
+          <p className="text-base text-slate-300 text-ellipsis overflow-hidden whitespace-nowrap">{thread.last_message}</p>
         </div>
       </div>
     </div>

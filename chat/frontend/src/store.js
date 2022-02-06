@@ -6,7 +6,9 @@ const initialState = {
   tokens: {
     access: null,
     refresh: null,
-  }
+  },
+  userId: null,
+  threads: []
 };
 
 export const GlobalContext = createContext(initialState);
