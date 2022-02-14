@@ -37,6 +37,12 @@ const Reducer = (state, action) => {
           ...newThreads,
         ]
       }
+    case 'SET_NEXT_THREAD_LIST_URL':
+      console.log(action)
+      return {
+        ...state,
+        nextThreadListUrl: action.payload,
+      }
     default:
       return state
   }

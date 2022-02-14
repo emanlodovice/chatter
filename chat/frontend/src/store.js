@@ -8,7 +8,8 @@ const initialState = {
     refresh: null,
   },
   userId: null,
-  threads: []
+  threads: [],
+  nextThreadListUrl: null,
 };
 
 export const GlobalContext = createContext(initialState);
